@@ -1,0 +1,221 @@
+步骤2：数据采集类定义
+self.image_sub=rospy.Subscriber("/cemera/rgb/image_raw",Image,self.rgb_callback,queue_size=1)
+self.rgb_image=self_brigr.imgmsg_to_cv2(msg,"bgr8")
+
+步骤3：图像数据采集
+整行rospy.init_node("recognition",anonymous=True)
+整行while not rospy.is shutdown():
+user_input=raw_input("Press 's' to save image, or 'q' to quit: ")
+
+步骤4：图像数据处理1
+import os
+import cv2
+
+data_dir = './data/images'
+anno_dir ='./data/annotation'
+
+for path in os.listdir(anno- dir):
+if ".ipynb- checkpoints" in path:
+continue
+for line in open(os.path.join(anno-_dir,path)):
+if'<xmin>'in line:
+    begin=line.find('<xmin>')+len('<xmin>')
+    end=line.find('</xmin>')
+    xmin=line[begin:end]
+if'<ymin>'in line:
+    begin=line.find('<xmin>')+len('<ymin>')
+    end=line.find('</ymin>')
+    ymin=line[begin:end]
+if'<xmax>'in line:
+    begin=line.find('<xmax>')+len('<xmax>')
+    end=line.find('</xmax>')
+    xmin=line[begin:end]
+if'<ymax>'in line:
+    begin=line.find('<ymax>')+len('<xmin>')
+    end=line.find('</ymax>')
+    ymax=line[begin:end]
+    result=xmin+''+ymin+''+xmax+''+ymax
+img=cv2.imread(os.path.join(data_dir,path)+'.jpg')
+img=img[int(ymin):int(ymax),int(xmin):int(xmax)]
+cv2.imwrite(os.path.join('./data/cut_img'，path)+'jpg',img)
+
+
+步骤5：图像数据处理2
+import shutil
+data_path='./classification/'
+for name in os.listdir(data- path):
+if 'jpeg' in name:
+os.rename(data- path+name,data- path+name.split('.')[0]+'.jpg')
+if 'png' in name:
+os.rename(data- path+name,data- path+name.split('.')[0]+'.jpg')
+for name in os.listdir(data-path):
+if 'strawberry' in name:
+shutil.move (data-_path+name,'./strawberry')
+if 'banana' in name:
+shutil.move (data-_path+name,'./banana')
+
+
+步骤6：图像阈值操作与边界填充
+ img=cv2.imread('./resource/cat.jpg')
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+ret,th = cv2.threshold(img,100,180,cv2.THRESH_BINARY) 
+th2 = cv2,adaptivethreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C，cv2.THRESH_BINARY,5,2)
+res = cv2.addweighted(th,0.5,0.8) 
+top_size, bottom_size, left_size, right_size = (50, 50, 50, 50)
+constant = cv2.copymakeborder(res,top_size,bottom_size,
+                             left_size,right_size,
+                             bordertype=cv2.BORDER_CONSTANT,
+                             value=(0,255,0))
+plt.xticks([ ]), plt.yticks([ ])
+plt.imshow(constant)
+
+任务二  步骤一导入依赖库 
+import numpy as np
+import warnings
+import matplotlib.pyplot as plt
+import matplotlib
+%matplotlib inline
+warnings.filterwarnings("ignore")
+步骤二：数据集
+num_imgs=50000
+img_size =8
+min_object_size=1
+max_object_size=4
+num_objects=1
+
+考bboxes=np.zeros((num_imgs,num_objects,4))
+imgs=np.zeros((num_imgs,img_size,img_size))
+
+for i_img in range(num_imgs)：
+for i_object in range(num_objects):
+w,h=np.random.randint(min_object_size,max_object-size,size=2)
+考x=np.random.randint(0,img_size-w)
+y=np.random.randint(0,img_size-h)
+imgs[i_img,x:x+w,y:y+h]=1.
+bboxes[i_img,i_object]=[x,y,w,h]
+bboxes
+
+
+任务3步骤一：升降杆控制
+def asyncs(func):
+@wraps(func)
+def wrapper(*args,**kwargs):
+thr = Thread(target=func, args=args, kwargs=kwargs)
+thr.start()
+return wrapper
+考port_list= list(serial.tools.list_ports. comports())
+class Lifter:
+def __init__(self, name=None, baudrate=None):
+if name==None:
+name ="/dev/ttyUSB1"
+elif len(port_list)==0:
+print('no serial')
+if baudrate==None:
+baudrate="115200”
+考self.serial_port=serial.Serial(name, baudrate, timeout=0.1)
+@asyncs
+def up(self):
+self,serial_port,write("#UP".encode('utf-8'))
+@asyncs
+def down(self):
+self,serial_port,write("#DOWN".encode('utf-8'))
+@asyncs
+def hold(self):
+self,serial_port,write("#HOLD".encode('utf-8'))
+
+
+步骤三：二维码识别
+class Marker():
+def _init__(self):
+self.ARUCO_DICT={ ("DICT_4X4_50":cv2.aruco.DICT_4X4_50,
+                              "DICT_4X4_100":cv2.aruco.DICT_4X4_100, 
+                              "DICT_4X4_250":cv2.aruco.DICT_4X4_250,
+                              "DICT_4X4_1000":Cv2.aruco.DICT_4X4_1000,
+                              "DICT_5X5_50":cv2.aruco.DICT_5X5_50， 
+                              "DICT_5X5 100": cv2.aruco.DICT 5X5 100,
+                              "DICT_5X5_250":cv2.aruco.DICT_5X5_250,
+                              "DICT_5X5_1000":Cv2.aruco.DICT_5X5_1000,
+                              "DICT_6X6_50":cv2.aruco.DICT_6X6_50，
+                              "DICT_6X6_100":cv2.aruco.DICT_6X6_100,
+                              "DICT_6X6_250":cv2.aruco.DICT_6X6_250，
+                              "DICT_6X6_1000":cv2.aruco.DICT_6X6_1000,
+                              "DICT_7X7_50":cv2.aruco.DICT_7X7_50，
+                              "DICT_7X7_100":cv2.aruco.DICT_7X7_100,
+                              "DICT_7X7_250":cv2.aruco.DICT_7X7_250,
+                              "DICT_7X7_1000":cv2.aruco.DICT_7X7_1000,}
+self.aruco_dict =cv2.aruco.Dictionary_get(self.ARUCO_DICT.get("DICT_5X5_100"))
+
+def create_marker(self,marker_id):
+try:
+marker_img= cv2.aruco.drawMarker(self.aruco_dict, marker_id, 500)
+pic_name="images/marker_{}.jpg".format(marker_id)
+cv2.imwrite(pic_name,marker_img)
+except Exception as e:
+print(traceback.format_exc())
+def detect_marker(self, image_path) :
+try:
+image=cv2.imread(image_path)
+arucoParams = cv2.aruco,DetectorParameters_creata()
+(corners, ids, rejected)= cv2.aruco.detectMarkers(image, self.aruco_dict,parameters=arucoParams) 
+for i, corner in enumerate(corners):
+for j in range(len(corner[0]) - 1):
+考cv2.line(image, tuple(map(int, corner[0][j])), tuple(map(int, corner[0][j + 1])), (0, 0, 255))
+考cv2.line(image, tuple(map(int, corner[0][-1])), tuple(map(int, corner[0][0])), (0, 0, 255))
+考cv2.putText(image, str(ids[i][0]), (int(corner[0][0][0]), int(corner[0][0][1] - 10)),
+考cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
+cv2.imwrite('answer_markers.jpg', image)
+cv2.waitKey(0)
+except Exception as e:
+print(traceback.format_exc())
+
+
+步骤五：行驶过程二维码识别
+import rospy
+from geometry_msgs.msg import Twist
+import threading
+from cv_bridge import CvBridge
+from sensor_msgs.msg inport String
+import traceback
+inport cv2
+from mark import Marker
+class Car(threading.Thread):
+def__init__(self):
+super(Car,self).__init__()
+self.queue_size=1
+self.rate=rospy.Rate(30)
+self.twist=Twist()
+考self.twist.linear.x=0.1
+self.twist.angular.z=0
+rospy.sleep(0.2)
+self.result=[]
+self.rgb_image=None
+self.marker=Marker()
+self.lifter=Lifter()
+self.pub=rospy.Publinsher("cmb_vel",Twist,queue_size=self.queue_size)
+考self.rgb_sub=rospy.Subscriber("/camera/rgb/inage_raw",Image,self.rgb_callback,queue_size=1)
+
+def run(self):
+try:
+while not rospy.is_shutdown() and self.working:
+if len(self.result)>0:
+self.lifter.up()
+print('up')
+self.working=False
+time.sleep(3)
+self.lifter.down()
+print('down')
+考self.pub.publish(self.twist)
+except Exception as e:
+print(e)
+def rgb_callback(self,msg):
+try:
+self.rgb_image=self.bridge.imgmsg_to_cv2(msg,"bgr8")
+考self.result=self.marker.detect_marker(self.rgb_image)
+except Exception as e:
+print(traceback.format_exc())
+
+
+步骤6：
+整行考rospy.init_node("car_control_node",anonymous=True)
+car=Car()
+整行考car.start()
